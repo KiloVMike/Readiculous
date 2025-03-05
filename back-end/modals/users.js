@@ -37,16 +37,10 @@ const user = new mongoose.Schema({
     ],
     cart: [
         {
-          bookId: {
             type: mongoose.Types.ObjectId,
             ref: "books"
-          },
-          quantity: {
-            type: Number,
-            default: 1
-          }
         }
-      ],
+    ],
     order: [
         {
             type: mongoose.Types.ObjectId,

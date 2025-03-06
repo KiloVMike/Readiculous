@@ -40,10 +40,13 @@ const Cart = () => {
 
   useEffect(() => {
     if (cart && cart.length > 0) {
-      let Total = cart.reduce((acc, item) => acc + item.price, 0);
-      setTotal(Total);
+      let totalAmount = cart.reduce((acc, item) => acc + item.price, 0);
+      setTotal(totalAmount);
+      console.log("Updated Total:", totalAmount); // ✅ Debugging
     }
   }, [cart]);
+
+  
 
   const handlePayment = () => {
     if (!paymentMethod) {
@@ -53,17 +56,137 @@ const Cart = () => {
     if (paymentMethod === "cod") {
       placeOrder();
     } else if (paymentMethod === "razorpay") {
-      navigate('/payment-gateway');
+      initiateRazorpayPayment(); // ⬅️ Open Razorpay directly
     }
   };
 
-  const placeOrder = async () => {
-    const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/placeorder`, { order: cart }, { headers });
-    const cartValue = await axios.get(`${process.env.REACT_APP_BASE_URL}/getuserinfo`, { headers });
-    dispatch(cartCount(cartValue.data.cart.length));
-    alert(response.data.message);
-    navigate('/profile/orderhistory');
+  const handlePaymentSuccess = async (response) => {
+    try {
+        console.log("Payment Success:", response);
+        console.log("Sending email to:", localStorage.getItem("email")); // Check if the email is correct
+
+        const invoiceResponse = await axios.post(
+            `${process.env.REACT_APP_BASE_URL}/generate-invoice`,
+            { order: cart, email: localStorage.getItem("email") }, // Ensure this is the correct email
+            { headers }
+        );
+
+        // Show success toast if invoiceResponse is successful
+        if (invoiceResponse.status === 200) {
+            toast.success("Payment successful! Invoice generated and sent to your email.");
+        } else {
+            toast.error("Failed to generate invoice.");
+        }
+
+        // Place order
+        await placeOrder();
+        
+    } catch (error) {
+        console.error("Payment verification failed:", error);
+        toast.error("Payment verification failed");
+    }
+};
+
+
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
   };
+  
+  const initiateRazorpayPayment = async () => {
+    const isScriptLoaded = await loadRazorpayScript();
+    if (!isScriptLoaded) {
+        toast.error("Failed to load Razorpay. Please check your internet connection.");
+        return;
+    }
+    try {
+        console.log("Initiating Razorpay with amount:", total);
+
+        const { data } = await axios.post(
+            `${process.env.REACT_APP_BASE_URL}/create-order`,
+            { amount: total, currency: "INR" }
+        );
+
+        if (!data || !data.order || !data.order.id) {
+            throw new Error("Invalid order response from API");
+        }
+
+        const options = {
+            key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+            amount: data.order.amount,
+            currency: data.order.currency,
+            name: "READICULOUS",
+            description: "Book Payment",
+            order_id: data.order.id,
+            handler: handlePaymentSuccess, // ✅ Call on payment success
+            prefill: {
+                name: "User",
+                email: "user@example.com",
+                contact: "9999999999",
+            },
+            theme: { color: "#3399cc" },
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+    } catch (error) {
+        console.error("Razorpay Error:", error);
+        toast.error("Payment initiation failed");
+    }
+};
+
+
+  
+
+
+const placeOrder = async () => {
+  try {
+      if (!cart || cart.length === 0) {
+          toast.error("Your cart is empty");
+          return;
+      }
+
+      const orderData = cart.map((item) => ({
+          _id: item._id, // Ensure each item has `_id`
+      }));
+
+      console.log("🛠️ Placing COD order with data:", { order: orderData, paymentMethod: "COD" });
+
+      const response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}/placeorder`,
+          { order: orderData, paymentMethod: "COD" },
+          { headers }
+      );
+
+      console.log("✅ Order placed successfully:", response.data);
+
+      // 📝 Generate invoice after COD order
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/generate-invoice`, { order: cart }, { headers });
+
+      // ✅ Show toast after invoice generation
+      toast.success("Order placed successfully! Invoice generated.");
+
+      // Update cart count
+      const cartValue = await axios.get(`${process.env.REACT_APP_BASE_URL}/getuserinfo`, { headers });
+      dispatch(cartCount(cartValue.data.cart.length));
+
+      navigate('/profile/orderhistory');
+
+  } catch (error) {
+      console.error("❌ Error placing COD order:", error.response?.data || error.message);
+      toast.error("Failed to place order");
+  }
+};
+
+
+
 
   return (
     <div className='bg-green-100 min-h-screen py-10 px-4 sm:px-12 flex flex-col items-center'>

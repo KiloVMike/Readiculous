@@ -18,6 +18,7 @@ import AddBook from './components/AddBook'
 import AllOrders from './components/AllOrders'
 import UpdateBook from './pages/UpdateBook'
 import { ToastContainer } from 'react-toastify'
+import PaymentGateway from './components/PaymentGateway'
 const App = () => {
 
   const role = useSelector((state) => (state.auth.role));
@@ -32,7 +33,7 @@ const App = () => {
 
   return (
     <>
- <ToastContainer />
+ <ToastContainer position="top-right" autoClose={3000} />
       <Navbar />
       <Routes>
         <Route exact path='/' element={<Home />}></Route>
@@ -41,12 +42,16 @@ const App = () => {
         <Route path='/cart' element={<Cart />}></Route>
         <Route path='/profile' element={<Profile />}>
         
+        
 
           {(role === "user") ? (<Route index element={<Favourites />}></Route>) : (<Route index element={<AllOrders />}></Route>)}
           {(role === "user") ? (<Route path='/profile/orderhistory' element={<OrderHistory />} />) : (<Route path='/profile/addbooks' element={<AddBook />} />)}
 
           <Route path='/profile/setting' element={<Setting />} />
         </Route>
+
+        <Route path="/payment-gateway" element={<PaymentGateway />} />
+
         <Route path='/signup' element={<Signup />}></Route>
         <Route path='/login' element={<Login />}></Route>
         <Route path='/updatebook/:id' element={<UpdateBook />}></Route>

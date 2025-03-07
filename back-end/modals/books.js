@@ -1,8 +1,9 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+
 const books = new mongoose.Schema({
     url: {
         type: Array,
-      required: true,
+        required: true,
     },
     title: {
         type: String,
@@ -12,6 +13,10 @@ const books = new mongoose.Schema({
         type: String,
         required: true,
     },
+    genre: {
+        type: String,  
+        required: true,  
+    },
     price: {
         type: Number,
         required: true,
@@ -19,15 +24,13 @@ const books = new mongoose.Schema({
     desc: {
         type: String,
         required: true,
-
     },
     language: {
         type: String,
         required: true,
     },
-
-
+    
 },
-    { timestamps: true }
-);
+{ timestamps: true });
+
 module.exports = mongoose.model("books", books);

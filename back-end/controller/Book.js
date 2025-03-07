@@ -17,6 +17,7 @@ exports.Addbook = async (req, res) => {
             url: req.body.url,
             title: req.body.title,
             author: req.body.author,
+            genre: req.body.genre,
             price: req.body.price,
             desc: req.body.desc,
             language: req.body.language
@@ -87,6 +88,7 @@ exports.Updatebook = async (req, res) => {
                 url: req.body.url,
                 title: req.body.title,
                 author: req.body.author,
+                genre: req.body.genre,
                 price: req.body.price,
                 desc: req.body.desc,
                 language: req.body.language

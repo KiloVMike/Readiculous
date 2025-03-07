@@ -38,12 +38,29 @@ const ViewBookDetails = () => {
     };
     fetchBook();
   }, [id]);
+
+  // Handle Add to Favorites
   const handleFav = async () => {
-    const response = await axios.put(`${process.env.REACT_APP_BASE_URL}/addfav`, {}, { headers });
-    alert(response.data.message);
+    if (!isLoggedIn) {
+      toast.error("Please log in to add to favorites!", { position: "top-right", theme: "dark" });
+      return;
+    }
+
+    try {
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}/addfav`, {}, { headers });
+      toast.success(response.data.message || "Added to favorites successfully!", { position: "top-right", theme: "dark" });
+    } catch (error) {
+      toast.error("Failed to add to favorites. Please try again.", { position: "top-right", theme: "dark" });
+    }
   };
-  
+
+  // Handle Add to Cart
   const handleCart = async (bookId) => {
+    if (!isLoggedIn) {
+      toast.error("Please log in to add to cart!", { position: "top-right", theme: "dark" });
+      return;
+    }
+
     try {
       const userId = localStorage.getItem("id");
       if (!userId) {
@@ -66,7 +83,6 @@ const ViewBookDetails = () => {
       }
 
       toast.success(response.data.message || "Added to cart successfully.", { position: "top-right", theme: "dark" });
-
     } catch (error) {
       console.error("🔴 Error adding to cart:", error);
 
@@ -78,30 +94,23 @@ const ViewBookDetails = () => {
       }
     }
   };
-  
-  
 
-  
-  
-  
-
+  // Delete Book Logic
   const deleteBook = async () => {
     if (prompt("Type 'confirm' to delete") === 'confirm') {
       try {
         const response = await axios.delete(`${process.env.REACT_APP_BASE_URL}/deletebook/${id}`, { headers });
-        alert(response.data.message);
+        toast.success(response.data.message || "Book deleted successfully!", { position: "top-right", theme: "dark" });
         navigate('/allbooks');
       } catch (error) {
-        alert('Failed to delete book.');
+        toast.error('Failed to delete book.', { position: "top-right", theme: "dark" });
       }
     } else {
-      alert('Delete cancelled.');
+      toast.info('Delete cancelled.', { position: "top-right", theme: "dark" });
     }
   };
 
   const updateBook = () => navigate(`/updatebook/${id}`);
-
-  
 
   return (
     <motion.div 
@@ -130,13 +139,12 @@ const ViewBookDetails = () => {
                       <span className='text-white font-semibold text-lg'>Add to Favorites</span>
                     </button>
                     <button 
-  className="py-4 px-8 bg-blue-500 hover:bg-blue-600 rounded-lg transition flex items-center space-x-3" 
-  onClick={() => handleCart(data._id)} // ✅ Use `data._id`
->
-  <FaCartShopping className="text-white text-2xl" />
-  <span className="text-white font-semibold text-lg">Add to Cart</span>
-</button>
-
+                      className="py-4 px-8 bg-blue-500 hover:bg-blue-600 rounded-lg transition flex items-center space-x-3" 
+                      onClick={() => handleCart(data._id)} // ✅ Use `data._id`
+                    >
+                      <FaCartShopping className="text-white text-2xl" />
+                      <span className="text-white font-semibold text-lg">Add to Cart</span>
+                    </button>
                   </>
                 )}
                 {role === 'admin' && (

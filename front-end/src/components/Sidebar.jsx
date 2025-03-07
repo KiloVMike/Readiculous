@@ -30,21 +30,27 @@ const Sidebar = (props) => {
         </div>
 
         {/* Navigation Links */}
-        <div className='flex flex-col w-full space-y-3'>
-          {role === "user" && (
-            <Link to="/profile" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Favourites</Link>
-          )}
-          {role === "user" && (
-            <Link to="/profile/orderhistory" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Order History</Link>
-          )}
-          {role === "admin" && (
-            <Link to="/profile" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>All Orders</Link>
-          )}
-          {role === "admin" && (
-            <Link to="/profile/addbooks" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Add Book</Link>
-          )}
-          <Link to="/profile/setting" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Setting</Link>
-        </div>
+<div className='flex flex-col w-full space-y-3'>
+  {role === "user" && (
+    <Link to="/profile" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Favourites</Link>
+  )}
+  {role === "user" && (
+    <Link to="/profile/orderhistory" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Order History</Link>
+  )}
+  {role === "admin" && (
+    <Link to="/profile/addbooks" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Add Book</Link>
+  )}
+  {role === "admin" && (
+    <Link to="/profile/allbook" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>All Books</Link>
+  )}
+  {role === "admin" && (
+    <Link to="/profile" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>All Orders</Link>
+  )}
+  {role === "admin" && (
+    <Link to="/profile/allusers" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>All Users</Link>
+  )}
+  <Link to="/profile/setting" className='text-gray-900 font-medium text-lg py-3 w-full text-center rounded-lg hover:bg-green-400 transition-all'>Setting</Link>
+</div>
 
         {/* Logout Button */}
         <button className='bg-blue-700 text-white font-semibold flex items-center justify-center w-full py-3 rounded-lg hover:bg-red-600 hover:scale-105 transition-all duration-300 shadow-md mt-2' onClick={logoutbtn}>

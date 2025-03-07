@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { auth, provider, signInWithPopup } from '../firebase'; // Firebase Auth
 import { toast, ToastContainer } from 'react-toastify'; // Corrected import of ToastContainer
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify styles
 
@@ -21,7 +20,9 @@ const Signup = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
     // Validation
     const { username, email, password, address } = values;
 
@@ -61,7 +62,17 @@ const Signup = () => {
         values
       );
 
-      toast.success('Signup Successful! Please login.');
+      // Log the full response to check for the correct message format
+      console.log("API Response: ", response);
+
+      // Check if the response contains a message
+      if (response.data && response.data.message) {
+        toast.success(response.data.message || 'Signup Successful! Please login.');
+      } else {
+        toast.error('Signup failed. Please try again.');
+      }
+
+      // Redirect to login page after successful signup
       navigate('/login');
     } catch (error) {
       console.error('Signup error:', error);
@@ -73,17 +84,17 @@ const Signup = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-  
+
       // Send user data to backend
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/google-auth`, {
         email: user.email,
         displayName: user.displayName,
         uid: user.uid,
       });
-  
+
       // Save the token in localStorage
       localStorage.setItem('token', response.data.token);
-  
+
       // Redirect to profile or home page
       window.location.href = '/profile';
     } catch (error) {
@@ -91,11 +102,7 @@ const Signup = () => {
       toast.error('Google Signup failed. Please try again!');
     }
   };
-  
-  
-  
-  
-  
+
   return (
     <div className="h-screen flex items-start justify-center bg-green-200 px-6 pt-6">
       <div className="flex w-full max-w-screen-xl">
@@ -106,59 +113,61 @@ const Signup = () => {
           </h2>
 
           <div className="space-y-6">
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Username</label>
-              <input
-                type="text"
-                name="username"
-                placeholder="Enter username"
-                className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
-                value={values.username}
-                onChange={handleChange}
-              />
-            </div>
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Enter username"
+                  className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
+                  value={values.username}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Email</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter email"
-                className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
-                value={values.email}
-                onChange={handleChange}
-              />
-            </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter email"
+                  className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
+                  value={values.email}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Password</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
-                value={values.password}
-                onChange={handleChange}
-              />
-            </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                  className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
+                  value={values.password}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Address</label>
-              <textarea
-                name="address"
-                placeholder="Enter address"
-                className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
-                value={values.address}
-                onChange={handleChange}
-              ></textarea>
-            </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium">Address</label>
+                <textarea
+                  name="address"
+                  placeholder="Enter address"
+                  className="w-full p-3 bg-green-100 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
+                  value={values.address}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
 
-            <button
-              className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
-              onClick={handleSubmit}
-            >
-              Sign Up
-            </button>
+              <button
+                type="submit" // Changed to submit type for proper form submission
+                className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
+              >
+                Sign Up
+              </button>
+            </form>
 
             <p className="text-gray-700 text-sm text-center">or</p>
 

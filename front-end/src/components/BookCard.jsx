@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const BookCard = (props) => {
   const headers = {
@@ -15,11 +16,18 @@ const BookCard = (props) => {
         { bookid: props.data._id },
         { headers }
       );
+      toast.success(response.data.message, {
+        theme: "dark",
+        position: "top-right",
+        autoClose: 3000,
+      });
       alert(response.data.message);
       props.update();
     } catch (error) {
-      console.error("Failed to remove favorite:", error);
-      alert("Failed to remove favorite");
+      toast.error("Failed to remove favorite 📚", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -33,7 +41,10 @@ const BookCard = (props) => {
             <p className="text-gray-600 text-lg italic">
               By: <span className="font-medium">{props.data.author}</span>
             </p>
-            <p className="text-green-700 text-2xl font-bold mt-2">${props.data.price}</p>
+            <p className="text-blue-700 text-lg font-bold uppercase mt-2">
+              {props.data.genre}
+            </p>
+            <p className="text-green-700 text-2xl font-bold mt-2">₹{props.data.price}</p>
           </div>
         </div>
       </Link>

@@ -19,8 +19,8 @@ function Trending() {
     }, []);
 
     return (
-        <div className='bg-white p-12 my-12 mx-auto w-full rounded-lg shadow-lg border border-gray-300 relative overflow-hidden'>
-            <div className='absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-50 opacity-50'></div>
+        <div className=' p-12 my-12 mx-auto w-full  bg-amber-100  border-green-700 border-4 rounded-2xl relative '>
+           
             <p className='relative text-5xl font-bold text-gray-900 tracking-wide mb-10 text-center'>Trending Books</p>
             <div className='relative grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 p-8 justify-center'>
                 {books.length > 0 ? (
@@ -31,7 +31,8 @@ function Trending() {
                 <div className='mt-5 text-center w-full'>
                   <p className='text-gray-900 text-xl font-semibold truncate'>{book.title}</p>
                   <p className='text-gray-600 text-lg italic'>By: <span className='font-medium'>{book.author}</span></p>
-                  <p className='text-green-700 text-2xl font-bold mt-2'>${book.price}</p>
+                  <p className='text-blue-700 text-xl font-semibold uppercase'>{book.genre}</p>
+                  <p className='text-green-700 text-2xl font-bold mt-2'>₹{book.price}</p>
                 </div>
               </div>
                         </Link>

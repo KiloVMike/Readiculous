@@ -169,7 +169,9 @@ const ViewBookDetails = () => {
               <div className='flex items-center text-2xl mt-2 text-gray-400 uppercase tracking-wide font-semibold'>
                 <span className='mr-2'>By :</span>
                 <p className='text-gray-700 italic'>{data.author}</p>
+                
               </div>
+              <p className='text-2xl font-semibold text-blue-700 italic uppercase'>{data.genre}</p>
               <p className='flex items-center text-gray-700 mt-3 text-xl'>
                 <GrLanguage className='mr-3' /> {data.language}
               </p>

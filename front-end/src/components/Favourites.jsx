@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BookCard from './BookCard';
 import Loader from './Loader';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Favourites = () => {
   const [Fav, setFav] = useState(null);
@@ -16,7 +18,10 @@ const Favourites = () => {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/getfavbooks`, { headers });
       setFav(response.data.data);
     } catch (error) {
-      console.error("Error fetching favorite books", error);
+      toast.error("Error fetching favorite books 📚", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 

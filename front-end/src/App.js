@@ -35,7 +35,7 @@ const App = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} theme='dark'/>
       <Navbar />
       <Routes>
         <Route exact path='/' element={<Home />} />

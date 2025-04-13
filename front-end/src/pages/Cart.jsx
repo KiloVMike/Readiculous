@@ -15,6 +15,8 @@ const Cart = () => {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
 
   const headers = {
     id: localStorage.getItem("id"),
@@ -53,6 +55,7 @@ const Cart = () => {
       toast.error("Please choose a payment method", { position: "top-right", theme: "dark" });
       return;
     }
+    setLoading(true);
     if (paymentMethod === "cod") {
       placeOrder();
     } else if (paymentMethod === "razorpay") {
@@ -182,20 +185,24 @@ const placeOrder = async () => {
   } catch (error) {
       console.error("❌ Error placing COD order:", error.response?.data || error.message);
       toast.error("Failed to place order");
+  } finally {
+      setLoading(false);
   }
 };
 
 
 
 
+
   return (
     <div className='bg-green-100 min-h-screen py-10 px-4 sm:px-12 flex flex-col items-center'>
+     {loading && <Loader />} 
       <p className='text-4xl font-bold text-gray-800 mb-8 flex items-center'>
         <FaShoppingCart className='mr-3 text-green-700 text-5xl'/> Your Cart
       </p>
       {!cart ? (
         <div className='h-screen flex items-center justify-center'>
-          <Loader />
+          
         </div>
       ) : cart.length === 0 ? (
         <div className='h-screen flex items-center justify-center'>
@@ -240,11 +247,12 @@ const placeOrder = async () => {
                 </button>
               </div>
               <button
-                className='bg-green-700 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300 w-full mt-4'
-                onClick={handlePayment}
-              >
-                {paymentMethod === "cod" ? "Complete Order" : "Proceed to Payment"}
-              </button>
+  className='bg-green-700 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300 w-full mt-4'
+  onClick={handlePayment}
+  disabled={loading}
+>
+  {loading ? "Processing..." : paymentMethod === "cod" ? "Complete Order" : "Proceed to Payment"}
+</button>
             </div>
           </div>
         </div>

@@ -4,22 +4,22 @@ import axios from "axios";
 const PaymentGateway = () => {
   const handlePayment = async () => {
     try {
-      // 1️⃣ Create an order on the backend
+     
       const { data } = await axios.post("http://localhost:5000/api/payment/create-order", {
-        amount: 500, // Amount in INR
+        amount: 500, 
         currency: "INR",
         receipt: "order_rcptid_11",
       });
 
       const { order } = data;
 
-      // 2️⃣ Open Razorpay Checkout
+      
       const options = {
-        key: "your_razorpay_key_id", // Replace with your actual Key ID
+        key: "rzp_test_nE9jLUZZ7ygTf7", 
         amount: order.amount,
         currency: order.currency,
-        name: "HOMESAGE",
-        description: "Real Estate Payment",
+        name: "Readiculous",
+        description: "Online Book Store",
         order_id: order.id,
         handler: async (response) => {
           const verifyRes = await axios.post("http://localhost:5000/api/payment/verify-payment", response);
@@ -49,7 +49,7 @@ const PaymentGateway = () => {
         className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
         onClick={handlePayment}
       >
-        Pay Now ₹500
+        Pay Now
       </button>
     </div>
   );

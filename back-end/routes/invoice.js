@@ -22,7 +22,7 @@ router.post("/generate-invoice", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const invoiceId = `invoice_${Date.now()}.pdf`;
+        const invoiceId = `${userInfo.username}_${Date.now()}.pdf`;
         const invoiceDir = path.join(__dirname, "../invoices");
         const invoicePath = path.join(invoiceDir, invoiceId);
 

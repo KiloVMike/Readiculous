@@ -3,3 +3,6 @@
 =======
 .env
 >>>>>>> 0b5c6b1f11a5f8377be3dd68b7b9443b6afcfd5b
+
+/package.json
+/package-lock.json

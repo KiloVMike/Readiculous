@@ -71,3 +71,8 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+package-lock.json
+package.json
+
+node_modules/

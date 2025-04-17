@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import Recently from '../components/Recently';
 import Trending from '../components/Trending';
+import Footer from '../components/Footer';
 
 // Genre Icons
 import FictionIcon from '../asset/fiction.webp';
@@ -43,9 +44,15 @@ const genresList = [
 const Home = () => {
     return (
         <div className="relative space-y-16 p-12 bg-green-200 bg-cover bg-center">
-            {/* Hero Section */}
+      
+      <div className="relative top-0   ">      {/* Hero Section */}
             <Hero />
+</div>
 
+ {/* Trending Section */}
+ <Trending />
+
+ 
             {/* Genre Section */}
             <div className="mt-16 mb-16">
                 <h2 className="text-5xl font-extrabold text-gray-800 text-center mb-10 tracking-wide">🔥 Explore Genres</h2>
@@ -73,13 +80,15 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Trending Section */}
-            <Trending />
+           
 
             {/* Recently Section */}
             <Recently />
+           
         </div>
+       
     );
+     
 };
 
 export default Home;

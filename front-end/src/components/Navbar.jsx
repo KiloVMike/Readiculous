@@ -1,3 +1,4 @@
+     
 import React, { useState, useEffect } from 'react';
 import logo from '../asset/logo.png';
 import { FiMenu } from "react-icons/fi";
@@ -167,6 +168,12 @@ const Navbar = () => {
               <span className="block h-[3px] w-0 bg-green-700 group-hover:w-full transition-all duration-300"></span>
             </Link>
           </li>
+          <li className="relative group">
+            <Link to="/aboutus" className="transition-all duration-300 text-gray-800 font-extrabold tracking-wide group-hover:text-green-800">
+              About Us
+              <span className="block h-[3px] w-0 bg-green-700 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+          </li>
           {isLoggedIn && (
             <>
               <li className='hover:text-green-600 transition-all duration-300 flex items-center'>
@@ -189,24 +196,26 @@ const Navbar = () => {
           )}
         </ul>
         {isLoggedIn ? (
-  <Link to="/profile" className="ml-10">
-    <img
-      className="rounded-full h-12 w-12 object-cover border-2 border-green-500 hover:border-green-700 transition duration-300"
-      src={currentUser?.avatar || "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"}
-      onError={(e) => (e.target.src = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png")}
-      alt="profile"
-    />
-  </Link>
-) : (
-  <Link to="/login" className="ml-10">
-    <button className="bg-green-500 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 text-lg">
-      Log In
-    </button>
-  </Link>
-)}
+          <Link to="/profile" className="ml-10 flex items-center">
+            <img
+              className="rounded-full h-12 w-12 object-cover border-2 border-green-500 hover:border-green-700 transition duration-300"
+              src={currentUser?.avatar || "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"}
+              onError={(e) => (e.target.src = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png")}
+              alt="profile"
+            />
+            <span className="ml-3 text-lg font-semibold">{currentUser?.username}</span>
+          </Link>
+        ) : (
+          <Link to="/login" className="ml-10">
+            <button className="bg-pink-500 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 text-lg">
+              Log In
+            </button>
+          </Link>
+        )}
       </div>
     </div>
   );
 };
 
 export default Navbar;
+

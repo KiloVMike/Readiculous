@@ -19,7 +19,7 @@ function Trending() {
     }, []);
 
     return (
-        <div className=' p-12 my-12 mx-auto w-full  bg-amber-100  border-green-700 border-4 rounded-2xl relative '>
+        <div className=' p-12 my-12 mx-auto w-full  bg-amber-50 border-green-700 border-4 rounded-2xl relative '>
            
             <p className='relative text-5xl font-bold text-gray-900 tracking-wide mb-10 text-center'>Trending Books</p>
             <div className='relative grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 p-8 justify-center'>

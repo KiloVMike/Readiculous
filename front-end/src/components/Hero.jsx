@@ -22,8 +22,8 @@ const Hero = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 className='relative flex flex-col justify-center w-full sm:w-3/6 px-6 space-y-6 text-center sm:text-left'>
-                <h1 className='text-6xl lg:text-7xl font-extrabold text-white leading-tight drop-shadow-lg'>Discover Your Next Great Read</h1>
-                <p className='text-lg sm:text-xl text-white leading-relaxed'>Explore books that spark curiosity, knowledge, and adventure. Discover your next great read with Readiculous today.</p>
+                <h1 className='text-6xl lg:text-7xl font-extrabold text-white-900 leading-tight drop-shadow-lg '>Discover Your Next Great Read</h1>
+                <p className='text-lg sm:text-xl text-white-900 leading-relaxed'>Explore books that spark curiosity, knowledge, and adventure. Discover your next great read with Readiculous today.</p>
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -39,9 +39,9 @@ const Hero = () => {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className='relative w-full sm:w-3/6 flex justify-center'>
+                className='relative top-0  w-full sm:w-3/6 flex justify-center'>
                 <div className=' p-4 rounded-3xl shadow-xl relative overflow-hidden'>
-                    <img src={img1} alt="Hero" className='' />
+                    <img src={img1} alt="Hero" className='relative z-0' />
                 </div>
             </motion.div>
         </div>

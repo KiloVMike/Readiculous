@@ -46,32 +46,31 @@ exports.placeOrder = async (req, res) => {
 };
 
 exports.orderHistory = async (req, res) => {
-
-
     try {
         const { id } = req.headers;
-        // yha pr chaining ho rhi h user->order->book 
-        const userData = await User.findById(id).populate(
-            {
+
+        // Fetch the user along with orders, books, and invoices
+        const userData = await User.findById(id)
+            .populate({
                 path: "order",
                 populate: { path: "book" }
-            }
-        );
-        const ordersData = userData.order
-        // console.log(ordersData);
+            })
+            .select("order invoices"); // Make sure invoices are included in the response
 
+        const ordersData = userData.order;
+
+        // Return the orders with invoices included
         return res.json({
             status: "success",
-            data: ordersData
-        })
-
-
+            data: ordersData,
+            invoices: userData.invoices,  // Include invoices here
+        });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({ message: "failed to load orders" })
+        return res.status(400).json({ message: "Failed to load orders" });
     }
+};
 
-}
 
 exports.updateStatus = async (req, res) => {
     try {

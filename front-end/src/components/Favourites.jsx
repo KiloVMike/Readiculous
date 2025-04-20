@@ -6,57 +6,63 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Favourites = () => {
-  const [Fav, setFav] = useState(null);
+  const [favourites, setFavourites] = useState(null);
 
   const headers = {
-    id: localStorage.getItem("id"),
-    authorization: `Bearer ${localStorage.getItem("token")}`,
+    id: localStorage.getItem('id'),
+    authorization: `Bearer ${localStorage.getItem('token')}`,
   };
 
-  const fetch = async () => {
+  const fetchFavourites = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/getfavbooks`, { headers });
-      setFav(response.data.data);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/getfavbooks`, {
+        headers,
+      });
+      setFavourites(response.data.data);
     } catch (error) {
-      toast.error("Error fetching favorite books 📚", {
-        position: "top-right",
+      toast.error('Failed to fetch favourite books 📚', {
+        position: 'top-right',
         autoClose: 3000,
       });
     }
   };
 
   useEffect(() => {
-    fetch();
+    fetchFavourites();
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-green-200">
+    <div className="flex flex-col min-h-screen bg-green-100">
+      {/* Header */}
+      <header className="py-10 text-center">
+        <h1 className="text-4xl font-bold text-gray-800 tracking-wide">My Favourites</h1>
+        <p className="text-sm text-gray-600 mt-2">Curated with care 💚</p>
+      </header>
+
       {/* Main Content */}
-      <div className="flex-grow py-6">
-        <h1 className="text-3xl font-semibold text-gray-900 text-center mb-6">My Favourites</h1>
-  
-        {!Fav ? (
-          <div className="w-full flex items-center justify-center">
+      <main className="flex-grow px-4 sm:px-8 md:px-16 lg:px-24 pb-10">
+        {!favourites ? (
+          <div className="flex justify-center items-center h-64">
             <Loader />
           </div>
-        ) : Fav.length === 0 ? (
-          <div className="w-full flex items-center justify-center mt-10">
-            <p className="text-lg text-gray-700">No Favourite Books Yet 📚</p>
+        ) : favourites.length === 0 ? (
+          <div className="flex justify-center mt-10">
+            <p className="text-xl text-gray-700">No Favourite Books Yet 📚</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 lg:gap-6">
-            {Fav.map((item, index) => (
-              <div key={index} className="transition-transform duration-300 hover:scale-105">
-                <BookCard data={item} fav={true} update={fetch} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            {favourites.map((book, idx) => (
+              <div key={idx} className="transition-transform duration-300 hover:scale-105">
+                <BookCard data={book} fav={true} update={fetchFavourites} />
               </div>
             ))}
           </div>
         )}
-      </div>
-  
+      </main>
+
       {/* Footer */}
-      <footer className="bg-green-300 text-gray-900 text-center p-4 mt-6">
-        <p>© 2025 Readiculous. All rights reserved.</p>
+      <footer className="bg-green-200 text-gray-800 text-center py-4 border-t border-green-300">
+        <p className="text-sm">&copy; 2025 <span className="font-semibold">Readiculous</span>. All rights reserved.</p>
       </footer>
     </div>
   );

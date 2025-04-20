@@ -78,15 +78,15 @@ const Allbooks = () => {
 
   return (
     <div className="bg-gradient-to-r from-blue-200 to-green-300 min-h-screen text-black px-6 sm:px-12 py-8">
-      <h4 className="text-gray-900 text-4xl font-extrabold mb-8 text-center">All Books</h4>
+     <h1 className="text-4xl md:text-5xl font-bold text-center mb-10 text-teal-900">Explore Our Library</h1>
       
-      <div className="my-8 flex flex-wrap gap-6 justify-center">
-        <input
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-10 px-2">
+     <input
           type="text"
-          placeholder="Search by title or author"
+          placeholder="Search by title or author..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-3 border border-gray-300 rounded-xl shadow-md focus:ring-2 focus:ring-blue-400 focus:outline-none w-1/3 sm:w-1/4"
+          className="rounded-2xl border border-gray-300 px-4 py-3 shadow-sm focus:ring-2 focus:ring-teal-500 outline-none w-full"
         />
 
         <select
@@ -152,6 +152,9 @@ const Allbooks = () => {
           ))}
         </div>
       )}
+      <footer className="bg-green-200 text-gray-800 text-center py-4 border-t border-green-300">
+        <p className="text-sm">&copy; 2025 <span className="font-semibold">Readiculous</span>. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

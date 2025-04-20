@@ -9,7 +9,7 @@ const favourite = require("./routes/favourite.js");
 const cart = require("./routes/cart.js");
 const order = require("./routes/order.js");
 const paymentRoutes = require("./routes/payment.js");
-const invoiceRouter = require("./routes/invoice");
+const invoiceRouter = require("./routes/invoice.js");
 
 const User = require("./modals/users");
 const jwt = require('jsonwebtoken'); 
@@ -32,7 +32,7 @@ app.use("/api/v1", invoiceRouter);
 
 
 // Serve invoices
-app.use("/invoices", express.static(path.join(__dirname, "invoices")));
+//app.use("/invoices", express.static(path.join(__dirname, "invoices")));
 
 app.listen(port, () => {
   console.log(`Server started successfully at ${port}.`);

@@ -32,12 +32,16 @@ exports.removetocart = async (req, res) => {
         res.status(500).json({ message: "failed to remove in cart" })
     }
 }
-
 exports.getusercart = async (req, res) => {
-    const { id } = req.headers;
-    const userData = await User.findById(id).populate("cart");
-    const cart = userData.cart.reverse();
-    return res.status(200).json({
-        data: cart,
-    })
+    try {
+        const { id } = req.headers;
+        const userData = await User.findById(id).populate("cart");
+        const cart = userData.cart.reverse();
+        return res.status(200).json({
+            data: cart,
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "failed to get cart" })
+    }
 }

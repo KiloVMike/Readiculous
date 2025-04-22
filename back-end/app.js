@@ -10,6 +10,8 @@ const cart = require("./routes/cart.js");
 const order = require("./routes/order.js");
 const paymentRoutes = require("./routes/payment.js");
 const invoiceRouter = require("./routes/invoice.js");
+const googleAuthRoute = require('./routes/googleAuthRoute');
+
 
 const User = require("./modals/users");
 const jwt = require('jsonwebtoken'); 
@@ -29,6 +31,7 @@ app.use("/api/v1", cart);
 app.use("/api/v1", order);
 app.use("/api/v1", paymentRoutes);
 app.use("/api/v1", invoiceRouter);
+app.use('/api/v1', googleAuthRoute);
 
 
 // Serve invoices

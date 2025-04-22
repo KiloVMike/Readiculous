@@ -3,44 +3,42 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { app } from "../firebase"; // Import existing Firebase config
+import { app } from "../firebase";
 
-const storage = getStorage(app); // Initialize Firebase Storage
+const storage = getStorage(app);
 
 const Settings = () => {
-  const [userData, setUserData] = useState({}); // Default empty object
+  const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [currentUser, setCurrentUser
-  ] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-useEffect(() => {
-    // Fetch user data from localStorage or API
-    const user = JSON.parse(localStorage.getItem("  id"));
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-        setCurrentUser(user);
+      setCurrentUser(user);
     }
-}, []);
+  }, []);
 
   const headers = {
     id: localStorage.getItem("id"),
     authorization: `Bearer ${localStorage.getItem("token")}`,
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/getuserinfo`, { headers });
-        setUserData(response.data || {}); // Ensure default object
-      } catch (error) {
-        console.error('Error fetching user data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/getuserinfo`, { headers });
+      setUserData(response.data || {});
+    } catch (error) {
+      console.error('Error fetching user data', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, []);
 
@@ -50,11 +48,10 @@ useEffect(() => {
     address: Yup.string().required('Address is required'),
   });
 
-  // Function to handle image upload to Firebase
   const handleImageUpload = async () => {
     if (!imageFile) return null;
 
-    const storageRef = ref(storage, `avatars/${imageFile.name}`);
+    const storageRef = ref(storage, `avatars/${Date.now()}-${imageFile.name}`);
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
     setUploading(true);
@@ -79,43 +76,47 @@ useEffect(() => {
 
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      if (!currentUser || !currentUser._id) {
-        console.error("User ID not found");
-        alert("Error: User ID is missing. Please re-login.");
-        return;
-      }
-  
       let avatarURL = userData.avatar || "/default-avatar.png";
       if (imageFile) {
         avatarURL = await handleImageUpload();
       }
   
       const updatedData = {
-        userId: currentUser._id,
         username: values.username.trim(),
         email: values.email.trim(),
         address: values.address.trim(),
         avatar: avatarURL,
       };
   
-      console.log("Sending Data:", updatedData);
-  
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}/userinfo`,
         updatedData,
         { headers }
       );
-  
-      console.log("Response:", response.data);
-      setUserData(updatedData);
+
+      // Update the user data in the state
+      setUserData(response.data); // Updates userData with the response (includes _id, username, etc.)
+
+      alert("Profile updated successfully!");
+
+      // Re-fetch the user data to reflect the changes
+      await fetchUserData();  // <-- This will re-fetch the updated user info
+
     } catch (error) {
       console.error("Error updating user", error.response?.data || error);
+      alert("Failed to update profile. Check console.");
     } finally {
       setSubmitting(false);
     }
   };
-  
-  
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   if (loading) {
     return <div className="text-center text-xl text-gray-700 mt-10">Loading...</div>;
@@ -123,7 +124,7 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-green-100 flex flex-col items-center p-6">
-      {/* User Info Display */}
+      {/* Profile Info */}
       <div className="bg-white py-6 px-6 rounded-xl shadow-lg flex flex-col items-center w-full max-w-sm mb-6">
         <img
           src={imagePreview || userData?.avatar || "/default-avatar.png"}
@@ -165,44 +166,20 @@ useEffect(() => {
               <ErrorMessage name="address" component="div" className="text-red-500 text-sm" />
             </div>
             <div>
-              <label htmlFor="avatar" className="block text-gray-700 font-medium">Upload Avatar</label>
+              <label htmlFor="avatar" className="block text-gray-700 font-medium">Profile Picture</label>
               <input
                 type="file"
                 accept="image/*"
-                onChange={(event) => {
-                  const file = event.target.files[0];
-                  setImageFile(file);
-                  setImagePreview(URL.createObjectURL(file));
-                }}
-                className="mt-1 p-2 border border-black rounded w-full bg-gray-50"
+                onChange={handleImageChange}
+                className="mt-1 w-full"
               />
-              {imageFile && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setUploading(true);
-                    try {
-                      const uploadedURL = await handleImageUpload();
-                      setUserData((prev) => ({ ...prev, avatar: uploadedURL }));
-                      console.log("Image uploaded:", uploadedURL);
-                    } catch (error) {
-                      console.error("Error uploading image:", error);
-                    }
-                    setUploading(false);
-                  }}
-                  className="mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors w-full"
-                  disabled={uploading}
-                >
-                  {uploading ? "Uploading..." : "Upload Image"}
-                </button>
-              )}
             </div>
             <button
               type="submit"
               disabled={isSubmitting || uploading}
-              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors w-full"
+              className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
             >
-              {isSubmitting ? 'Updating...' : uploading ? 'Uploading Image...' : 'Update'}
+              {uploading ? "Uploading..." : isSubmitting ? "Saving..." : "Update Info"}
             </button>
           </Form>
         )}

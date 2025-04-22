@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify'; // Corrected import of T
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify styles
 
 import img1 from '../asset/img1.png'; // Import image if it's in the 'src' directory
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../firebase';
 
 const Signup = () => {
   const [values, setValues] = useState({
@@ -82,27 +84,32 @@ const Signup = () => {
 
   const handleGoogleSignup = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-      // Send user data to backend
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/google-auth`, {
-        email: user.email,
-        displayName: user.displayName,
-        uid: user.uid,
-      });
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/google-auth`, {
+            email: user.email,
+            displayName: user.displayName,
+            uid: user.uid,
+            avatar: user.photoURL,
+        });
 
-      // Save the token in localStorage
-      localStorage.setItem('token', response.data.token);
+        const token = response.data.token;
 
-      // Redirect to profile or home page
-      window.location.href = '/profile';
+        // Save the token to localStorage
+        localStorage.setItem('token', token);
+
+        // Redirect to profile or home page after successful login
+        navigate('/');
     } catch (error) {
-      console.error('Google Signup Error:', error);
-      toast.error('Google Signup failed. Please try again!');
+        console.error('Google Signup Error:', error);
+        toast.error('Google Signup failed. Please try again!');
     }
-  };
+};
 
+  
+  
+  
   return (
     <div className="h-screen flex items-start justify-center bg-green-200 px-6 pt-6">
       <div className="flex w-full max-w-screen-xl">

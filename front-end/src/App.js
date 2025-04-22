@@ -22,6 +22,8 @@ import { ToastContainer } from 'react-toastify';
 import PaymentGateway from './components/PaymentGateway';
 import AllBook from './components/AllBook';
 import AboutUs from './components/AboutUs';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 const App = () => {
   const role = useSelector((state) => state.auth.role);
@@ -68,6 +70,8 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/updatebook/:id' element={<UpdateBook />} />
         <Route path='/getdetails/:id' element={<Viewbookdetails />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       
       </Routes>
     

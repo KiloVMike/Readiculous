@@ -1,14 +1,12 @@
-// Import the functions you need from the SDKs you need // Import firebase app to initialize
+// firebase.js
 
+// Import the Firebase SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-
-
+// Your Firebase configuration
 const firebaseConfig = {
-  apiKey:"AIzaSyC-Q-4waBBAC76vEbNoYDxwDHCiiC_GMZc",
+  apiKey: "AIzaSyC-Q-4waBBAC76vEbNoYDxwDHCiiC_GMZc",
   authDomain: "mern-homesage.firebaseapp.com",
   projectId: "mern-homesage",
   storageBucket: "mern-homesage.appspot.com",
@@ -16,10 +14,12 @@ const firebaseConfig = {
   appId: "1:492325563218:web:ec533638f6f54d0627a88b"
 };
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-export const app = initializeApp(firebaseConfig);
-
+// Set up Firebase Auth
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export { auth, provider, signInWithPopup };
+// Export for use in components
+export { app, auth, provider, signInWithPopup };

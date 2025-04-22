@@ -41,9 +41,9 @@ function Trending() {
                     <p className='text-gray-700 text-center text-lg'>Loading...</p>
                 )}
             </div>
-        </div>
+        </div>   
     ); 
-}
+};
 
 export default Trending;
 

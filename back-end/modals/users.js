@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+
 
 const user = new mongoose.Schema({
     username: {
         type: String,
-        required: true,
+        required: function() { return !this.googleId; },
         unique: true,
         minlength: [3, 'Username must be at least 3 characters long'],
         maxlength: [50, 'Username cannot exceed 50 characters']
@@ -17,7 +19,6 @@ const user = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         minlength: [6, 'Password must be at least 6 characters long']
     },
     address: {
@@ -52,6 +53,16 @@ const user = new mongoose.Schema({
             ref: "order"
         }
     ],
+
+    resetToken: {
+        type: String,
+        default: ""
+    },
+    resetTokenExpiry: {
+        type: Date
+    },
+
+    googleId: [{ type: String, unique: true }], // Google ID for Google users
     invoices: [
         {
             fileName: String,
@@ -63,5 +74,17 @@ const user = new mongoose.Schema({
         }
     ]
 }, { timestamps: true });
+
+// Hash password before saving (if password is modified)
+user.pre("save", async function(next) {
+    if (!this.isModified("password")) return next();
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
 
 module.exports = mongoose.model("user", user);

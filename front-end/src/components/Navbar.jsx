@@ -197,12 +197,17 @@ const Navbar = () => {
         </ul>
         {isLoggedIn ? (
           <Link to="/profile" className="ml-10 flex items-center">
-            <img
-              className="rounded-full h-12 w-12 object-cover border-2 border-green-500 hover:border-green-700 transition duration-300"
-              src={currentUser?.avatar || "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"}
-              onError={(e) => (e.target.src = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png")}
-              alt="profile"
-            />
+          <img
+  className="rounded-full h-12 w-12 object-cover border-2 border-green-500 hover:border-green-700 transition duration-300"
+  src={
+    currentUser?.avatar && currentUser.avatar.trim() !== ""
+      ? currentUser.avatar
+      : "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"
+  }
+  onError={(e) => (e.target.src = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png")}
+  alt="profile"
+/>
+
             <span className="ml-3 text-lg font-semibold">{currentUser?.username}</span>
           </Link>
         ) : (
@@ -218,4 +223,8 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+
 

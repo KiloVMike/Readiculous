@@ -3,7 +3,7 @@ import Loader from '../components/Loader';
 import { MdDelete } from "react-icons/md";
 import { FaMoneyBillWave, FaCreditCard, FaShoppingCart } from "react-icons/fa";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cartCount } from '../store/cart';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -13,6 +13,7 @@ const Cart = () => {
   const [cart, setCart] = useState();
   const [total, setTotal] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -23,8 +24,13 @@ const Cart = () => {
   };
 
   const fetch = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/getusercart`, { headers });
-    setCart(response.data.data);
+    const [cartRes, userRes] = await Promise.all([
+      axios.get(`${process.env.REACT_APP_BASE_URL}/getusercart`, { headers }),
+      axios.get(`${process.env.REACT_APP_BASE_URL}/getuserinfo`, { headers })
+    ]);
+
+    setCart(cartRes.data.data);
+    setUser(userRes.data);
   };
 
   useEffect(() => {
@@ -52,20 +58,14 @@ const Cart = () => {
       return;
     }
     setLoading(true);
-    if (paymentMethod === "cod") {
-      placeOrder(); // Place COD order
-    } else if (paymentMethod === "razorpay") {
-      initiateRazorpayPayment(); // Open Razorpay directly
-    }
+    paymentMethod === "cod" ? placeOrder() : initiateRazorpayPayment();
   };
 
-  const handlePaymentSuccess = async (response) => {
+  const handlePaymentSuccess = async () => {
     try {
-      // Place order after payment success
       await placeOrder();
       toast.success("Payment successful!");
     } catch (error) {
-      console.error("Payment verification failed:", error);
       toast.error("Payment verification failed");
     }
   };
@@ -74,7 +74,6 @@ const Cart = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
@@ -84,18 +83,15 @@ const Cart = () => {
   const initiateRazorpayPayment = async () => {
     const isScriptLoaded = await loadRazorpayScript();
     if (!isScriptLoaded) {
-      toast.error("Failed to load Razorpay. Please check your internet connection.");
+      toast.error("Failed to load Razorpay.");
       return;
     }
+
     try {
       const { data } = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/create-order`,
         { amount: total, currency: "INR" }
       );
-
-      if (!data || !data.order || !data.order.id) {
-        throw new Error("Invalid order response from API");
-      }
 
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID,
@@ -116,7 +112,6 @@ const Cart = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.error("Razorpay Error:", error);
       toast.error("Payment initiation failed");
     }
   };
@@ -127,58 +122,66 @@ const Cart = () => {
         toast.error("Your cart is empty");
         return;
       }
-  
+
       const orderData = cart.map((item) => ({ _id: item._id }));
-  
-      // Place the order first
       const orderResponse = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/placeorder`,
         { order: orderData, paymentMethod },
         { headers }
       );
-  
+
       toast.success("Order placed successfully!");
-  
-      // Generate the invoice
+
       const invoiceResponse = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/generate-invoice`,
         { order: cart },
         { headers }
       );
-  
+
       if (invoiceResponse.data.invoiceId) {
         toast.success("Invoice generated!");
         window.open(`${process.env.REACT_APP_BASE_URL}/invoice/${invoiceResponse.data.invoiceId}`, '_blank');
-      } else {
-        toast.error("Invoice generation failed");
       }
-  
+
       const cartValue = await axios.get(`${process.env.REACT_APP_BASE_URL}/getuserinfo`, { headers });
       dispatch(cartCount(cartValue.data.cart.length));
-  
       navigate('/profile/orderhistory');
     } catch (error) {
-      console.error("Error placing order:", error.response?.data || error.message);
       toast.error("Failed to place order");
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className='bg-green-100 min-h-screen py-10 px-4 sm:px-12 flex flex-col items-center'>
       {loading && <Loader />}
       <p className='text-4xl font-bold text-gray-800 mb-8 flex items-center'>
         <FaShoppingCart className='mr-3 text-green-700 text-5xl' /> Your Cart
       </p>
+
       {!cart ? (
         <div className='h-screen flex items-center justify-center'></div>
       ) : cart.length === 0 ? (
-        <div className='h-screen flex items-center justify-center'>
-          <h1 className='text-2xl text-gray-600 font-semibold'>Your cart is empty.</h1>
+        <div className="flex flex-col items-center justify-center py-20">
+          <FaShoppingCart className="text-gray-400 text-7xl animate-bounce mb-6" />
+          <h1 className="text-3xl font-semibold text-gray-700 mb-3">Oops! Your Cart is Empty</h1>
+          <p className="text-gray-500 text-center max-w-md mb-6">
+            Looks like you haven’t added anything to your cart yet. Explore our collection and find your next favorite read!
+          </p>
+          <button
+            onClick={() => navigate('/allbooks')}
+            className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-full shadow-lg hover:bg-purple-800 transition-all duration-300"
+          >
+            Browse Books
+          </button>
         </div>
       ) : (
         <div className='w-full max-w-4xl space-y-6'>
+
+         
+
+          {/* Cart Items */}
           {cart.map((item, index) => (
             <div key={index} className='flex items-center justify-between bg-white p-6 rounded-xl shadow-xl'>
               <img src={item.url} alt={item.title} className='w-24 h-32 object-cover rounded-lg shadow-md' />
@@ -195,6 +198,26 @@ const Cart = () => {
             </div>
           ))}
 
+{/* Shipping Address Section */}
+{user?.address && (
+  <div className='bg-white p-6 rounded-xl shadow-md text-left'>
+    <h2 className='text-xl font-bold text-gray-800 mb-2'>Your Shipping Address</h2>
+    <p className='text-gray-700'>{user.address}</p>
+    <div className='flex items-center justify-center mt-6'>
+    <hr className='my-4 border-t border-black' />
+    
+    <p className=' text-sm text-gray-500 mt-1'>
+  You can change your shipping address in <Link to="/profile/setting" className='underline hover:text-blue-300'>Settings</Link>.
+</p>
+
+</div>
+  </div>
+)}
+
+
+
+
+          {/* Total and Payment */}
           <div className='bg-white text-gray-900 p-6 rounded-xl shadow-xl text-center'>
             <p className='text-3xl font-extrabold mb-2 text-gray-800'>Total Amount</p>
             <div className='flex justify-between font-bold text-2xl my-4 border-t border-gray-300 pt-4 text-gray-800'>

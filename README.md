@@ -22,8 +22,10 @@ Bookstore is a full-stack web application built using the MERN stack. This proje
 
 * Browse Books: Users can browse through a list of available books.    
 * Purchase Books: Users can add books to their cart and complete the purchase.    
-* Manage Favorites: Users can add books to their favorite list.    
-* Order Status: Users can check the status of their orders.    
+* Manage Favorites: Users can add books to their favorite list.
+* RAZORPAY: Razorpay is used to give users a smooth and secured payment gateway.    
+* Order Status: Users can check the status of their orders.
+* Order Invoice: Users can download their invoices anytime they want from their order history section.
 
 ### Admin Features
 
